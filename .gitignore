@@ -16344,3 +16344,4 @@ tags
 ### Nohup template
 nohup.out
 
+!/pyproject.toml
