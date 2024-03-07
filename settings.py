@@ -1,4 +1,4 @@
-URL_HH = "https://api.hh.ru/vacancies"
+from pathlib import Path
 
-COUNT_VACANCIES_BY_PAGE = 100
-
+ROOT_PATH = Path(__file__).parent
+DATABASE_CONFIG_PATH = ROOT_PATH.joinpath('config.ini')

@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 
@@ -6,10 +8,11 @@ def get_company(list_id_company: tuple[int]) -> list[tuple[int, str, str]]:
     """ Метод для получения списка всех компаний и количество вакансий у каждой компании."""
     list_company = []
     for id_company in list_id_company:
-        url_hh = f"https://api.hh.ru/vacancies?employer_id={id_company}"  # тут тоже прятала ссылку + вообще проверить эту ссылку
+        url_hh = f"https://api.hh.ru/employers/{id_company}"  # тут тоже прятала ссылку + вообще проверить эту ссылку
         response = requests.get(url=url_hh).json()
-        list_company.append(response["id"], response["name"],
-                            response["vacancies_url"])  # проверить как называется в документации
+        list_company.append((response['id'], response['name'],
+                            response['alternate_url']))  # проверить как называется в документации vacancies_url и все остальное
+        #тут ошибка 'id' - исаравила, кортеж
     return list_company
 
 
@@ -41,6 +44,14 @@ def get_vacancy_hh(list_company: list[tuple[int, str, str]]) -> list[tuple[str, 
     list_vacancy = []
     for company in list_company:
         response = requests.get(company[2]).json()
+        # тут ошибка идёт
+        # if response.status_code == 200:
+        #     try:
+        #         data = response.json()
+        #     except json.decoder.JSONDecodeError as e:
+        #         print("Ошибка декодирования JSON:", e)
+        # else:
+        #     print("Ошибка при выполнении запроса:", response.status_code)
 
         for vacancy in response["items"]:
             if vacancy["salary"] is None:
