@@ -59,6 +59,7 @@ def get_vacancy_hh(list_company: list[tuple[int, str, str]]) -> list[tuple[str, 
     return list_vacancy
 
 
+
 # employer = vacancy["employer"],
 # employer_id = vacancy["employer_id"],
 # title = vacancy["name"],
