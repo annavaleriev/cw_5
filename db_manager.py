@@ -4,7 +4,6 @@ from settings import DATABASE_CONFIG_PATH  # Импорт переменной D
 
 import psycopg2  # Импорт библиотеки psycopg2, это библиотека для работы с базой данных PostgreSQL из Python.
 from psycopg2.extras import RealDictCursor  # Импорт библиотеки RealDictCursor - Этот тип курсора возвращает
-
 # результаты запроса в виде словаря, где ключами являются имена столбцов,
 # а значениями - соответствующие значения в строке результата.
 
@@ -23,8 +22,6 @@ class DBManager:  # Создание контекстного менеджера
     def __enter__(self):
         """Метод для подключения к базе данных"""
         try:  # Обработка исключений, если подключение не удалось
-            # self.connection = psycopg2.connect(dbname='vacancy', user='postgres', password='30051980', host='localhost',
-            #                                    cursor_factory=RealDictCursor)  # Подключение к базе данных
             self.connection = psycopg2.connect(**config['database'], cursor_factory=RealDictCursor)
             # Подключение к базе данных
             self.cursor = self.connection.cursor()  # Создание курсора, который будет использоваться для выполнения запросов
