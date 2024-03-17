@@ -87,19 +87,19 @@ class Vacancy:
 
         """ Метод, который создает объект Vacancy на основе данных о вакансии с HeadHunter"""
         # get_vacancy_hh видимо, так же
-        vacancy = {
-            "name": cls.check_params(vacancy_from_hh, "name"),
-            "salary_from": cls.check_params(vacancy_from_hh, "salary", "from", 0),
-            "salary_to": cls.check_params(vacancy_from_hh, "salary", "to", 0),
-            "currency": cls.check_params(vacancy_from_hh, "salary", "currency"),
-            "area": cls.check_params(vacancy_from_hh, "address", "city"),
-            "url": cls.check_params(vacancy_from_hh, "alternate_url"),
-            "employer": cls.check_params(vacancy_from_hh, "employer", "name"),
-            "employer_id": cls.check_params(vacancy_from_hh, "employer", "id"),
-            "requirement": cls.check_params(vacancy_from_hh, "snippet", "requirement"),
-            "experience": cls.check_params(vacancy_from_hh, "snippet", "responsibility")
+        vacancy = {  # создаем словарь с данными по вакансии
+            "name": cls.check_params(vacancy_from_hh, "name"),  # Название вакансии
+            "salary_from": cls.check_params(vacancy_from_hh, "salary", "from", 0),  # Зарплата от
+            "salary_to": cls.check_params(vacancy_from_hh, "salary", "to", 0),  # Зарплата до
+            "currency": cls.check_params(vacancy_from_hh, "salary", "currency"),  # Валюта
+            "area": cls.check_params(vacancy_from_hh, "address", "city"),  # Город
+            "url": cls.check_params(vacancy_from_hh, "alternate_url"),  # Ссылка на вакансию
+            "employer": cls.check_params(vacancy_from_hh, "employer", "name"),  # Работодатель
+            "employer_id": cls.check_params(vacancy_from_hh, "employer", "id"),  # id работодателя
+            "requirement": cls.check_params(vacancy_from_hh, "snippet", "requirement"),  # Требования
+            "experience": cls.check_params(vacancy_from_hh, "snippet", "responsibility")  # Опыт
         }
-        return Vacancy(vacancy)
+        return Vacancy(vacancy)  # возвращаем объект Vacancy с данными по вакансии
 
     # надо как-то проверить наличик дааных в словаре, в 4 курсовой это validate_field
 

@@ -1,73 +1,59 @@
-import configparser
-
-import psycopg2
-
-from DBManager import DBManager
-from settings import DATABASE_CONFIG_PATH
-from utils import get_company, get_vacancy_hh
-
-# Чтение кофигурационного файла
-config = configparser.ConfigParser()
-config.read(DATABASE_CONFIG_PATH)
-
-# # Получение пароля для подключения к базе данных
-# DB_PASSWORD = config['database']['DB_PASSWORD']
-
-# Установка соединения с базой данных. Psycopg2 - это библиотека для работы с базой данных PostgreSQL.
-connection = psycopg2.connect(**config['database'])
-print()
-
-with connection.cursor() as cursor:
-    cursor.execute('SELECT *  FROM vacancy JOIN company using ("id_company")')
-    aaaa = cursor.fetchall()
-    print(aaaa)
+from api_hh import Api_HH
+from db_manager import DBManager, Service
+from settings import COMPANIES_JSON_PATH
+from utils import load_companies
+from vacancy import Vacancy
 
 
+def main():
+    database_name = "vacancy"  # имя базы данных
+    id_companies = COMPANIES_JSON_PATH  # путь к файлу с id компаний
+
+    load_file_id_companies = load_companies(id_companies)  # загружаем файл с id компаний
+
+    db_manager = DBManager()  # создаем объект класса DBManager
+    # with db_manager as manager:
+
+    service = Service()  # создаем объект класса Service
+    service.manager = db_manager  # присваиваем атрибуту manager объекта service объект db_manager
+    # чтобы он дальше работал с методами класса DBManager
+
+    hh_api = Api_HH()  # создаем объект класса Api_HH
+    #
+    # for company in load_file_id_companies:  # перебор по  каждой компании в списке компаний
+    #     vacancy_info = hh_api.get_all_vacancies(company["id"])  # получаем список вакансий по id компании
+    # #
+    # vacancy = []  # создаем пустой список vacancy
+    # for vacancy in vacancy_info:  # перебор по каждой вакансии в списке вакансий
+    #     vacancy = Vacancy.get_vacancy_hh(vacancy_info)
+    #     vacancy.append(vacancy)  # добавляем в список vacancy вакансию
 
 
+print("""
+    Привет! Выберите один из пунктов,чтобы получить информацию:
+    1. Получить список всех компаний и количество вакансий в каждой из них
+    # 2. Получить список вакансий выбранной компании с подробной информацией
+    2. Получить список всех вакансий с указанием названия компании, названия вакансии, зарплаты и ссылки на вакансию
+    3. Получить среднюю зарплату по всем вакансиям
+    4. Получить список всех вакансий, у которых зарплата выше средней по всем вакансиям
+    5. Получить список всех вакансий по ключевому слову
+    """)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-# list_id_company = ('3127', '10521060', '5267014', '15478', '84585', '1740', '697715', '903111', '39305', '2180')
-#
-# list_company = get_company(list_id_company)
-# list_vacancy_company = get_vacancy_hh(list_company)
-#
-# try:
-#     with psycopg2.connect(
-#             dbname="north",
-#             user="postgres",
-#             password="30051980",  # вспомнить как прятать пароль
-#             host="localhost") as conn:
-#         with conn.cursor() as cursor:
-#             cursor.exsecutemany('INSERT INTO company VALUES (%s, %s, %s)', list_company), #С помощью метода executemany()
-#             # курсора выполняются SQL-запросы для массовой вставки данных в таблицу company и vacancy.
-#             cursor.exsecutemany('INSERT INTO vacancy VALUES (%s, %s, %s, %s, %s, %s)', list_vacancy_company)
-#             #Вместо %s в SQL-запросах используются заполнители, которые будут заменены данными из списка list_company
-#             # и list_vacancy_company.
-# finally:
-#     conn.close()
-#
-#
-# test_DBManager = DBManager()
-# print(test_DBManager.get_companies_and_vacancies_count())
-# print(test_DBManager.get_all_vacancies())
-# print(test_DBManager.get_avg_salary())
-# print(test_DBManager.get_vacancies_with_higher_salary())
-# print(test_DBManager.get_vacancies_with_keyword('Моряк'))
-#
+    choice = input("Введите номер пункта: ")  # ввод номера пункта пользователем
+    if choice == "1":
+        service.get_companies_and_vacancies_count()
+        db_manager.get_companies_and_vacancies_count()
+    # elif choice == "2":
+    #     company_id = int(input("Введите id компании: ")) # это странно, что пользователь должен знать id компании
+    #     hh_api.get_all_vacancies(company_id) # def get_all_vacancies у меня нет запроса на id компании
+    elif choice == "2":
+        service.get_all_vacancies()
+    elif choice == "3":
+        service.get_avg_salary()
+    elif choice == "4":
+        service.get_vacancies_with_higher_salary()
+    elif choice == "5":
+        keyword = input("Введите ключевое слово: ")
+        service.get_vacancies_with_keyword(keyword)
+    else:
+        print("Некорректный ввод команды! Попробуйте еще раз!")
