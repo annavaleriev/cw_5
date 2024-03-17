@@ -90,19 +90,17 @@ class Service:
             return manager.cursor.fetchall()  # Возврат результата запроса
 
     def load_companies(self):
-        companies = load_jsonfile(COMPANIES_JSON_PATH)
+        """Метод, который загружает данные о компаниях в базу данных"""
+        companies = load_jsonfile(COMPANIES_JSON_PATH)  # Загрузка данных о компаниях из файла
         with self.manager as manager:  # Открытие контекстного менеджера
-            companies_data = []
-            for company in companies:
-                companies_data.append(tuple(company.values()))
+            companies_data = []  # Создание списка для хранения данных о компаниях
+            for company in companies:  # Перебор всех компаний
+                companies_data.append(tuple(company.values()))  # Добавление данных о компании в список
 
-            query = """
+            query = """ 
                         INSERT INTO company (name_company, id_hh_company)
                         VALUES (%s, %s)
                     
             """
-            manager.cursor.executemany(query, companies_data)
-            manager.connection.commit()
-
-
-
+            manager.cursor.executemany(query, companies_data)  # Выполнение запроса
+            manager.connection.commit()  # Сохранение изменений в базе данных
