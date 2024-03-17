@@ -1,28 +1,29 @@
 import json  # импорт библиотеки json,которая позволяет работать с данными в формате JSON
+from typing import Any # импорт Any из модуля typing для работы с типами данных
 
 import requests  # импорт библиотеки requests, которая позволяет отправлять HTTP-запросы
 
 from settings import URL_HH  # импорт URL_HH из файла settings.py
 
 
-class API_HH:  # создание класса API_HH для получения вакансий с сайта HeadHunter
+class Api_HH:  # создание класса API_HH для получения вакансий с сайта HeadHunter
 
     """ Класс для получения вакансий с сайта HeadHunter по id компании"""
 
-    def get_all_vacancies(self, id: int) -> list[dict]:  # создание метода get_all_vacancies, который получает
+    def get_all_vacancies(self, id_company: int) -> list[dict]:  # создание метода get_all_vacancies, который получает
         # список вакансий по id по нужным критериям
         """ Метод, для получения списка вакансий по id по нужным критериям"""
 
         # создание словаря params, который содержит параметры запроса, которые будут передаваться
         params: dict = {
-            "employer_id": id,  # в запросе id компании
+            "employer_id": id_company,  # в запросе id компании
             "per_page": 100,  # количество вакансий на странице
             "page": 0  # номер страницы
         }
         response = requests.get(URL_HH, params=params)  # отправка запроса на сервер, который возвращает ответ
         response_data = json.loads(response.text)  # преобразование ответа в формате JSON в словарь
-        number_pages = response_data["pages"]  # количество страниц с вакансиями
-        all_vacancies = []  # создание пустого списка all_vacancies
+        number_pages: int = response_data["pages"]  # количество страниц с вакансиями
+        all_vacancies: list[dict[str, Any]] = []  # создание пустого списка all_vacancies
 
         if 'items' in response_data:  # если в словаре response_data есть ключ 'items'
             all_vacancies.extend(response_data['items'])  # добавление в список all_vacancies всех вакансий из словаря
