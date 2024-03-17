@@ -12,5 +12,6 @@ CREATE TABLE vacancy
 CREATE TABLE company
 (
 	id_company serial  PRIMARY KEY,
-	name_company varchar NOT NULL
+	name_company varchar NOT NULL,
+	id_hh_company varchar NOT NULL
 );

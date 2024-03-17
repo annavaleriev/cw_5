@@ -8,7 +8,7 @@ def load_jsonfile(filename: str):
     return result  # возвращает словарь
 
 
-def load_companies(filename: str):
-    """ Функция для загрузки списка компаний """
-    result = load_jsonfile(filename)  # загружает файл в формате json
-    return result  # возвращает словарь
+# def load_companies(filename: str):
+#     """ Функция для загрузки списка компаний """
+#     result = load_jsonfile(filename)  # загружает файл в формате json
+#     return result  # возвращает словарь

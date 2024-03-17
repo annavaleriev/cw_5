@@ -6,7 +6,6 @@ class Vacancy:
 
         """ Конструктор класса Vacancy"""
 
-        # self.id = vacancy_information["id"] # id вакансии, это мне вообще нужно?
         self.name = vacancy_information["name"]  # Название вакансии
         self.salary_from = vacancy_information["salary_from"]  # Зарплата от
         self.salary_to = vacancy_information["salary_to"]  # Зарплата до
@@ -17,7 +16,6 @@ class Vacancy:
         self.employer_id = vacancy_information["employer_id"]  # id работодателя
         self.requirement = vacancy_information["requirement"]  # Требования
         self.experience = vacancy_information["experience"]  # Опыт
-        # self.salary_avg = self.avg_salary  # Средняя зарплата
 
     def __str__(self):
         """ Выводит сообщение для пользователя по вакансии"""
