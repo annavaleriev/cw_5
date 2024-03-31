@@ -1,5 +1,8 @@
+import requests
+
+from api.vacancy import Vacancy
 from database.managers import DBManager
-from settings import COMPANIES_JSON_PATH
+from settings import COMPANIES_JSON_PATH, URL_HH
 from utils import load_jsonfile
 
 
@@ -104,3 +107,50 @@ class Service:
             """
             manager.cursor.executemany(query, companies_data)  # Выполнение запроса
             manager.connection.commit()  # Сохранение изменений в базе данных
+
+    def load_vacancies_to_db(self, keyword=None, company_id=None):
+        """Метод, который загружает данные о вакансиях в базу данных"""
+        params = {
+            "area": 1,  # Москва
+            "per_page": 100, # Количество вакансий на странице
+            "page": 0 # Номер страницы
+        }
+
+        all_vacancies = [] # Создание списка для хранения всех вакансий
+
+        while True: # Бесконечный цикл
+            response = requests.get(URL_HH, params=params)  # Отправка запроса на сервер
+            if response.status_code == 200: # Проверка, если статус код ответа 200
+                data = response.json()  # Получение данных из ответа
+                vacancies = data.get("items", []) # Получение списка вакансий из данных
+                all_vacancies.extend(vacancies) # Добавление вакансий в список всех вакансий
+
+                if len(vacancies) < params["per_page"]: # Проверка, если количество вакансий меньше, чем на странице
+                    break # Выход из цикла
+
+                params["page"] += 1 # Увеличение номера страницы на 1
+            else: # Проверка, если статус код ответа не равен 200
+                print("Ошибка при получении данных", response.status_code) # Вывод сообщения об ошибке
+                break # Выход из цикла
+
+        with self.manager as manager: # Открытие контекстного менеджера
+            for vacancy_data in all_vacancies: # Перебор всех вакансий
+                vacancy = Vacancy.get_vacancy_hh(vacancy_data) # Получение данных о вакансии
+                vacancy_dict = vacancy.get_vacancy_dict() # Получение словаря с данными о вакансии
+
+                query = """
+                                    INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            """ # Запрос на добавление данных о вакансии в базу данных
+
+            values = ( # Значения для добавления в базу данных
+                vacancy_dict["name"],
+                vacancy_dict["salary_from"],
+                vacancy_dict["salary_to"],
+                vacancy_dict["currency"],
+                vacancy_dict["area"],
+                vacancy_dict["url"],
+                vacancy_dict["employer_id"]
+            )
+            manager.cursor.execute(query, values) # Выполнение запроса
+        manager.connection.commit() # Сохранение изменений в базе данных

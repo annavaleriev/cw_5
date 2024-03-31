@@ -64,4 +64,6 @@ from database.services import Service
 db_manager = DBManager()
 service = Service()
 service.manager = db_manager
-service.load_companies()
+# service.load_companies()
+
+service.get_all_vacancies()
