@@ -155,3 +155,4 @@ class Service:
             manager.cursor.execute(query, values) # Выполнение запроса
         manager.connection.commit() # Сохранение изменений в базе данных
 
+
