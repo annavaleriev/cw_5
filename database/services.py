@@ -108,13 +108,24 @@ class Service:
             manager.cursor.executemany(query, companies_data)  # Выполнение запроса
             manager.connection.commit()  # Сохранение изменений в базе данных
 
-    def load_vacancies_to_db(self, keyword=None, company_id=None):
+    def load_vacancies_to_db(self, keyword=None, company_id=None, area=None):
         """Метод, который загружает данные о вакансиях в базу данных"""
         params = {
-            "area": 1,  # Москва
+            # "area": 1,  # Москва
             "per_page": 100, # Количество вакансий на странице
             "page": 0 # Номер страницы
         }
+
+        if area is not None: # Проверка, если параметр area не равен None
+            params["area"] = area # Установка значения параметра area
+        elif area is None:
+            # params.pop("area") # Удаление параметра area
+            params ["area"] = 1 # Установка значения параметра area
+
+        if keyword: # Проверка, если параметр keyword не равен None
+            params["text"] = keyword # Установка значения параметра keyword
+        elif company_id: # Проверка, если параметр company_id не равен None
+            params["employer_id"] = company_id # Установка значения параметра company_id
 
         all_vacancies = [] # Создание списка для хранения всех вакансий
 
