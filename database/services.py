@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import requests
 
 from api.hh import ApiHH
@@ -5,6 +7,9 @@ from api.vacancy import Vacancy
 from database.managers import DBManager
 from settings import COMPANIES_JSON_PATH, URL_HH
 from utils import load_jsonfile
+
+
+# Company = namedtuple('Company', ['name_company', 'id_hh_company']) # именованынй кортеж
 
 
 class Service:
@@ -97,17 +102,39 @@ class Service:
         """Метод, который загружает данные о компаниях в базу данных"""
         companies = load_jsonfile(COMPANIES_JSON_PATH)  # Загрузка данных о компаниях из файла
         with self.manager as manager:  # Открытие контекстного менеджера
-            companies_data = []  # Создание списка для хранения данных о компаниях
-            for company in companies:  # Перебор всех компаний
-                companies_data.append(tuple(company.values()))  # Добавление данных о компании в список
+            # companies_data = []  # Создание списка для хранения данных о компаниях
+            # for company in companies:  # Перебор всех компаний
+            #     companies_data.append(Company(**company))  # Добавление данных о компании в список
 
             query = """ 
                         INSERT INTO company (name_company, id_hh_company)
-                        VALUES (%s, %s)
+                        VALUES (%(name)s, %(id)s)
                     
             """
-            manager.cursor.executemany(query, companies_data)  # Выполнение запроса
+            manager.cursor.executemany(query, companies)  # Выполнение запроса
             manager.connection.commit()  # Сохранение изменений в базе данных
+
+    def get_companies_ids(self):
+        with self.manager as manager:  # Открытие контекстного менеджера
+            manager.cursor.execute(
+                """
+                    SELECT id_hh_company
+                    FROM company
+                """
+            )  # Выполнение запроса
+            companies = manager.cursor.fetchall()  # Возврат результата запроса
+        companies_ids = []
+        for company in companies:
+            companies_ids.append(company['id_hh_company'])
+        return companies_ids
+
+
+    def load_vacancies(self, vacancies: list[dict]):
+        with self.manager as manager:
+            query = """
+                        INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
+                        VALUES (%(name)s, %()s, %s, %s, %s, %s, %s)
+            """  # Запрос на добавление данных о вакансии в базу данных
 
     # def load_vacancies_to_db(self, keyword=None, company_id=None, area=None):
     #     """Метод, который загружает данные о вакансиях в базу данных"""
@@ -220,15 +247,18 @@ class Service:
     #                 manager.cursor.execute(query, values)
     #         manager.connection.commit()
 
-    def load_vacancies_to_db(self, keyword=None, __current_id_company=None, area=None): # они вообще мне нужны? почему-то тут не активные
+    def load_vacancies_to_db(self, keyword=None, __current_id_company=None,
+                             area=None):  # они вообще мне нужны? почему-то тут не активные
         """Метод, который загружает данные о вакансиях в базу данных"""
         api = ApiHH()  # Создаем экземпляр класса ApiHH
         all_vacancies = api.get_all_vacancies()  # Получаем список всех вакансий
 
         with self.manager as manager:  # Открытие контекстного менеджера
-            for company_data in all_vacancies: # Начинает цикл по всем элементам в списке all_vacancies. Каждый элемент представляет собой данные о компании и ее вакансиях
-                for vacancy_data in company_data['vacancies']: # Начинает вложенный цикл по всем вакансиям компании, хранящимся в ключе 'vacancies' словаря company_data
-                    vacancy = Vacancy.get_vacancy_hh(vacancy_data)  # Получение данных о вакансии\ Создает объект вакансии, используя метод get_vacancy_hh() класса Vacancy. Этот метод принимает данные о вакансии (vacancy_data) и возвращает объект вакансии
+            for company_data in all_vacancies:  # Начинает цикл по всем элементам в списке all_vacancies. Каждый элемент представляет собой данные о компании и ее вакансиях
+                for vacancy_data in company_data[
+                    'vacancies']:  # Начинает вложенный цикл по всем вакансиям компании, хранящимся в ключе 'vacancies' словаря company_data
+                    vacancy = Vacancy.get_vacancy_hh(
+                        vacancy_data)  # Получение данных о вакансии\ Создает объект вакансии, используя метод get_vacancy_hh() класса Vacancy. Этот метод принимает данные о вакансии (vacancy_data) и возвращает объект вакансии
                     vacancy_dict = vacancy.get_vacancy_dict()  # Получение словаря с данными о вакансии\ Получает словарь с данными о вакансии, используя метод get_vacancy_dict() объекта vacancy. Этот словарь содержит информацию о названии вакансии, зарплате и других атрибутах.
 
                     query = """
@@ -248,4 +278,3 @@ class Service:
                     manager.cursor.execute(query, values)  # Выполнение запроса
 
         manager.connection.commit()  # Сохранение изменений в базе данных \ Фиксирует все изменения в базе данных, сделанные в транзакции.
-

@@ -28,6 +28,7 @@
 #     #     vacancy = Vacancy.get_vacancy_hh(vacancy_info)
 #     #     vacancy.append(vacancy)  # добавляем в список vacancy вакансию
 #
+from api.hh import ApiHH
 from database.managers import DBManager
 from database.services import Service
 
@@ -62,8 +63,17 @@ from database.services import Service
 
 
 db_manager = DBManager()
+hh = ApiHH()
+
+
 service = Service()
 service.manager = db_manager
 # service.load_companies()
+hhh = service.get_companies_ids()
+hh.id_list_company = hhh
+all_vac = hh.get_all_vacancies()
+print()
 
-service.get_all_vacancies()
+
+
+# service.get_all_vacancies()

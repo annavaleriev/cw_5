@@ -62,6 +62,6 @@ class ApiHH:  # создание класса API_HH для получения �
 
 # if __name__ == '__main__':
 #     test = ApiHH()
-#     test.id_list_company = [3127, 10521060]
+#     test.id_list_company = [3127]
 #     jjjj = test.get_all_vacancies()
 #     print(jjjj)
