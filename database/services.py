@@ -89,8 +89,10 @@ class Service:
         with self.manager as manager:  # Открытие контекстного менеджера
             manager.cursor.execute(
                 """
-                    SELECT name_vacancy
+                    SELECT name_company, name_vacancy, salary_from, salary_to, salary_currency, alternate_url
                     FROM vacancy
+                    LEFT JOIN company 
+                    ON vacancy.id_employer = company.id_company
                     WHERE name_vacancy ILIKE %s
                 """,
                 (f"%{keyword}%",)
@@ -128,153 +130,23 @@ class Service:
             companies_ids.append(company['id_hh_company'])
         return companies_ids
 
-
     def load_vacancies(self, vacancies: list[dict]):
         with self.manager as manager:
-            query = """
-                        INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
-                        VALUES (%(name)s, %()s, %s, %s, %s, %s, %s)
-            """  # Запрос на добавление данных о вакансии в базу данных
+            for vacancy in vacancies:
+                manager.cursor.execute(
+                    """
+                        SELECT id_company
+                        FROM company
+                        WHERE id_hh_company = %s
+                    """, (vacancy['id_employer'],)
+                )
+                id_employer = manager.cursor.fetchone()
+                vacancy['id_employer'] = id_employer['id_company']
 
-    # def load_vacancies_to_db(self, keyword=None, company_id=None, area=None):
-    #     """Метод, который загружает данные о вакансиях в базу данных"""
-    #     params = {
-    #         # "area": 1,  # Москва
-    #         "per_page": 100, # Количество вакансий на странице
-    #         "page": 0 # Номер страницы
-    #     }
-    #
-    #     if area is not None: # Проверка, если параметр area не равен None
-    #         params["area"] = area # Установка значения параметра area
-    #     elif area is None:
-    #         # params.pop("area") # Удаление параметра area
-    #         params ["area"] = 1 # Установка значения параметра area
-    #
-    #     if keyword: # Проверка, если параметр keyword не равен None
-    #         params["text"] = keyword # Установка значения параметра keyword
-    #     elif company_id: # Проверка, если параметр company_id не равен None
-    #         params["employer_id"] = company_id # Установка значения параметра company_id
-    #
-    #     all_vacancies = [] # Создание списка для хранения всех вакансий
-    #
-    #     while True: # Бесконечный цикл
-    #         response = requests.get(URL_HH, params=params)  # Отправка запроса на сервер
-    #         if response.status_code == 200: # Проверка, если статус код ответа 200
-    #             data = response.json()  # Получение данных из ответа
-    #             vacancies = data.get("items", []) # Получение списка вакансий из данных
-    #             all_vacancies.extend(vacancies) # Добавление вакансий в список всех вакансий
-    #
-    #             if len(vacancies) < params["per_page"]: # Проверка, если количество вакансий меньше, чем на странице
-    #                 break # Выход из цикла
-    #
-    #             params["page"] += 1 # Увеличение номера страницы на 1
-    #         else: # Проверка, если статус код ответа не равен 200
-    #             print("Ошибка при получении данных", response.status_code) # Вывод сообщения об ошибке
-    #             break # Выход из цикла
-    #
-    #     with self.manager as manager: # Открытие контекстного менеджера
-    #         for vacancy_data in all_vacancies: # Перебор всех вакансий
-    #             vacancy = Vacancy.get_vacancy_hh(vacancy_data) # Получение данных о вакансии
-    #             vacancy_dict = vacancy.get_vacancy_dict() # Получение словаря с данными о вакансии
-    #
-    #             query = """
-    #                                 INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
-    #                                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-    #                         """ # Запрос на добавление данных о вакансии в базу данных
-    #
-    #         values = ( # Значения для добавления в базу данных
-    #             vacancy_dict["name"],
-    #             vacancy_dict["salary_from"],
-    #             vacancy_dict["salary_to"],
-    #             vacancy_dict["currency"],
-    #             vacancy_dict["area"],
-    #             vacancy_dict["url"],
-    #             vacancy_dict["employer_id"]
-    #         )
-    #         manager.cursor.execute(query, values) # Выполнение запроса
-    #     manager.connection.commit() # Сохранение изменений в базе данных
+                query = """
+                            INSERT INTO vacancy (name_vacancy, salary_from, salary_to, salary_currency, alternate_url, id_employer)
+                            VALUES (%(name_vacancy)s, %(salary_from)s, %(salary_to)s, %(salary_currency)s, %(alternate_url)s, %(id_employer)s)
+                """  # Запрос на добавление данных о вакансии в базу данных
+                manager.cursor.execute(query, vacancy)  # Выполнение запроса
 
-    # def load_vacancies_to_db(self, keyword=None, company_id=None, area=None):
-    #         """Метод, который загружает данные о вакансиях в базу данных"""
-    #         params = {
-    #             "per_page": 100,  # Количество вакансий на странице
-    #             "page": 0  # Номер страницы
-    #         }
-    #
-    #         if area is not None:
-    #             params["area"] = area
-    #         elif area is None:
-    #             params["area"] = 1
-    #
-    #         if keyword:
-    #             params["text"] = keyword
-    #         elif company_id:
-    #             params["employer_id"] = company_id
-    #
-    #         all_vacancies = []  # Создание списка для хранения всех вакансий
-    #
-    #         # Получаем общее количество страниц
-    #         total_pages = self.get_count_pages()
-    #
-    #         for page_num in range(total_pages):  # Итерируем по каждой странице
-    #             params["page"] = page_num  # Обновляем номер страницы в параметрах
-    #
-    #             response = self.get_response_by_page(page_num)  # Отправка запроса на сервер
-    #
-    #             if response.status_code == 200:
-    #                 data = response.json()
-    #                 vacancies = data.get("items", [])
-    #                 all_vacancies.extend(vacancies)
-    #
-    #         with self.manager as manager:
-    #             for vacancy_data in all_vacancies:
-    #                 vacancy = Vacancy.get_vacancy_hh(vacancy_data)
-    #                 vacancy_dict = vacancy.get_vacancy_dict()
-    #
-    #                 query = """
-    #                                     INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
-    #                                     VALUES (%s, %s, %s, %s, %s, %s, %s)
-    #                             """
-    #                 values = (
-    #                     vacancy_dict["name"],
-    #                     vacancy_dict["salary_from"],
-    #                     vacancy_dict["salary_to"],
-    #                     vacancy_dict["currency"],
-    #                     vacancy_dict["area"],
-    #                     vacancy_dict["url"],
-    #                     vacancy_dict["employer_id"]
-    #                 )
-    #                 manager.cursor.execute(query, values)
-    #         manager.connection.commit()
-
-    def load_vacancies_to_db(self, keyword=None, __current_id_company=None,
-                             area=None):  # они вообще мне нужны? почему-то тут не активные
-        """Метод, который загружает данные о вакансиях в базу данных"""
-        api = ApiHH()  # Создаем экземпляр класса ApiHH
-        all_vacancies = api.get_all_vacancies()  # Получаем список всех вакансий
-
-        with self.manager as manager:  # Открытие контекстного менеджера
-            for company_data in all_vacancies:  # Начинает цикл по всем элементам в списке all_vacancies. Каждый элемент представляет собой данные о компании и ее вакансиях
-                for vacancy_data in company_data[
-                    'vacancies']:  # Начинает вложенный цикл по всем вакансиям компании, хранящимся в ключе 'vacancies' словаря company_data
-                    vacancy = Vacancy.get_vacancy_hh(
-                        vacancy_data)  # Получение данных о вакансии\ Создает объект вакансии, используя метод get_vacancy_hh() класса Vacancy. Этот метод принимает данные о вакансии (vacancy_data) и возвращает объект вакансии
-                    vacancy_dict = vacancy.get_vacancy_dict()  # Получение словаря с данными о вакансии\ Получает словарь с данными о вакансии, используя метод get_vacancy_dict() объекта vacancy. Этот словарь содержит информацию о названии вакансии, зарплате и других атрибутах.
-
-                    query = """
-                        INSERT INTO vacancy (name_vacancy, salary_from, salary_to, currency, area, url, id_employer)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """  # Запрос на добавление данных о вакансии в базу данных
-
-                    values = (  # Значения для добавления в базу данных
-                        vacancy_dict["name"],
-                        vacancy_dict["salary_from"],
-                        vacancy_dict["salary_to"],
-                        vacancy_dict["currency"],
-                        vacancy_dict["area"],
-                        vacancy_dict["url"],
-                        vacancy_dict["employer_id"]
-                    )
-                    manager.cursor.execute(query, values)  # Выполнение запроса
-
-        manager.connection.commit()  # Сохранение изменений в базе данных \ Фиксирует все изменения в базе данных, сделанные в транзакции.
+            manager.connection.commit()  # Сохранение изменений в базе данных

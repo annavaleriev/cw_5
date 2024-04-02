@@ -2,28 +2,38 @@ class Vacancy:
     """
     Класс для работы с вакансиями
     """
-    __slots__ = ("title", "salary_from", "salary_to", "experience", "responsibility",
-                 "url", "area", "employment", "currency")
+    __slots__ = (
+        "name_vacancy",
+        "salary_from",
+        "salary_to",
+        "alternate_url",
+        "id_employer",
+        "salary_currency"
+    )
 
-    def __init__(self, title: str, salary_from: int, salary_to: int, experience: str,
-                 responsibility: str, url: str, area: str, employment: str, currency: str):
-        self.title = title
+    def __init__(
+            self,
+            name_vacancy: str,
+            salary_from: int,
+            salary_to: int,
+            salary_currency: str,
+            alternate_url: str,
+            id_employer: str
+    ):
+        self.name_vacancy = name_vacancy
         self.salary_to = salary_to
         self.salary_from = salary_from
-        self.experience = experience  # требования
-        self.responsibility = responsibility  # описание вакансии
-        self.url = url
-        self.area = area
-        self.employment = employment  # тип занятости
-        self.currency = currency
+        self.alternate_url = alternate_url
+        self.id_employer = id_employer
+        self.salary_currency = salary_currency
 
     def check_currency(self) -> str:
         """
         Метод, который проверяет указана ли валюта
         :return: валюту для отображения
         """
-        if self.currency is not None:
-            return self.currency
+        if self.salary_currency is not None:
+            return self.salary_currency
         else:
             return ""
 
@@ -48,15 +58,12 @@ class Vacancy:
         :return:строку с данными по вакансии
         """
 
-        return (f"Вакансия: {self.title}\n"
-                f"{self.url}\n"
-                f"Зарплата: {self.work_with_salary}\n"
-                f"Тип занятости: {self.employment}\n"
-                f"Город: {self.area}\n"
-                f"Описание вакансии: {self.responsibility}\n"
-                f"Требования:{self.experience}\n\n"
-                f"******************************************************************\n\n"
-                )
+        return (
+            f"Вакансия: {self.name_vacancy}\n"
+            f"{self.alternate_url}\n"
+            f"Зарплата: {self.work_with_salary}\n"
+            f"******************************************************************\n\n"
+        )
 
     def __gt__(self, other) -> bool:
         """
@@ -88,14 +95,11 @@ class Vacancy:
         :return: cловарь с данными по вакансии
         """
         vacancy_dict: dict = {
-            "title": self.title,
+            "name_vacancy": self.name_vacancy,
             "salary_to": self.salary_to,
             "salary_from": self.salary_from,
-            "experience": self.experience,
-            "responsibility": self.responsibility,
-            "url": self.url,
-            "area": self.area,
-            "employment": self.employment,
-            "currency": self.currency
+            "alternate_url": self.alternate_url,
+            "id_employer": self.id_employer,
+            "salary_currency": self.salary_currency,
         }
         return vacancy_dict

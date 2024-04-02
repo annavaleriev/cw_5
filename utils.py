@@ -25,25 +25,36 @@ def validate_field(field: dict, sub_field: str, default_returning_value) -> str 
         return default_returning_value
     return field[sub_field]
 
-def get_vacancy_hh(all_vacancies: list[dict]) -> list[Vacancy]:
+
+def get_vacancy_hh(all_companies: list[dict]) -> list[Vacancy]:
     """
     Метод, который создает список объектов Vacancy на основе данных о вакансиях.
-    :param all_vacancies: список со словарями с вакансиями с HeadHunter
+    :param all_companies: список со словарями
     :return: список с экземплярами класса Vacancy
     """
     list_vacancy: list = []
-    for vacancy in all_vacancies:
-        list_vacancy.append(
-            Vacancy(
-                title=vacancy["name"],
-                salary_from=validate_field(vacancy["salary"], "from", 0),
-                salary_to=validate_field(vacancy["salary"], "to", 0),
-                experience=vacancy["snippet"]["requirement"],
-                responsibility=validate_field(vacancy["snippet"], "responsibility", None),
-                url=vacancy["alternate_url"],
-                area=validate_field(vacancy["address"], "city", ""),
-                employment=validate_field(vacancy["employment"], "name", None),
-                currency=validate_field(vacancy["salary"], "currency", None)
+    for company in all_companies:
+        for vacancy in company['vacancies']:
+            list_vacancy.append(
+                Vacancy(
+                    name_vacancy=vacancy["name"],
+                    salary_from=validate_field(vacancy["salary"], "from", 0),
+                    salary_to=validate_field(vacancy["salary"], "to", 0),
+                    alternate_url=vacancy["alternate_url"],
+                    salary_currency=validate_field(vacancy["salary"], "currency", None),
+                    id_employer=company['id']
+                )
             )
-        )
     return list_vacancy
+
+
+def convert_real_dict_row_to_dict(data):
+    return {
+        key: str(value)
+        for key, value in data.items()
+    }
+
+
+def covert_to_json(data):
+    result = list(map(convert_real_dict_row_to_dict, data))
+    return json.dumps(result, indent=4, ensure_ascii=False)

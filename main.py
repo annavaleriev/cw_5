@@ -28,9 +28,12 @@
 #     #     vacancy = Vacancy.get_vacancy_hh(vacancy_info)
 #     #     vacancy.append(vacancy)  # добавляем в список vacancy вакансию
 #
+import json
+
 from api.hh import ApiHH
 from database.managers import DBManager
 from database.services import Service
+from utils import get_vacancy_hh, covert_to_json
 
 # print("""
 #     Привет! Выберите один из пунктов,чтобы получить информацию:
@@ -64,16 +67,28 @@ from database.services import Service
 
 db_manager = DBManager()
 hh = ApiHH()
-
-
 service = Service()
+
 service.manager = db_manager
-# service.load_companies()
-hhh = service.get_companies_ids()
-hh.id_list_company = hhh
-all_vac = hh.get_all_vacancies()
+
+service.load_companies()
+hh.id_list_company = service.get_companies_ids()
+all_vacancies = hh.get_all_vacancies()
 print()
+#
+# hh_vacancies_instance = get_vacancy_hh(all_vacancies)
+# vacancies = [vacancy.to_dict() for vacancy in hh_vacancies_instance]
+#
+# service.load_vacancies(vacancies)
+#
+# counter = service.get_companies_and_vacancies_count()
+# print(covert_to_json(counter))
+#
+#
+# salary = service.get_avg_salary()
+# print(covert_to_json(salary))
 
-
+data = service.get_vacancies_with_keyword("Стажер")
+print(covert_to_json(data))
 
 # service.get_all_vacancies()
