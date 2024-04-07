@@ -5,28 +5,28 @@ from utils import load_jsonfile
 
 class Service:
     """Класс для работы с базой данных"""
-    __manager = None  # Создание атрибута класса __manager, который будет использоваться для работы с базой данных
+    __manager = None
 
-    @property  # Декоратор для создания свойства manager
+    @property
     def manager(self):
         """Метод для получения значения атрибута __manager"""
-        if self.__manager is None:  # Проверка, если атрибут __manager не установлен
+        if self.__manager is None:
             raise NotImplementedError("""Менеджер базы данных не установлен. " 
-                                       Пожалуйста, установите менеджер перед выполнением операции.""")  # Вывод ошибки
-        return self.__manager  # Возврат значения атрибута __manager
+                                       Пожалуйста, установите менеджер перед выполнением операции.""")
+        return self.__manager
 
-    @manager.setter  # Декоратор для установки значения атрибута __manager
+    @manager.setter
     def manager(self, obj):
         """Метод для установки значения атрибута __manager"""
-        if not isinstance(obj, DBManager):  # Проверка, если объект не является экземпляром класса DBManager
+        if not isinstance(obj, DBManager):
             raise ValueError("""Неверный тип объекта для установки атрибута manager. 
-                                Ожидается объект класса DBManager или его подкласса.""")  # Вывод ошибки
-        self.__manager = obj  # Установка значения атрибута __manager
+                                Ожидается объект класса DBManager или его подкласса.""")
+        self.__manager = obj
 
     def get_all_vacancies(self):
         """ Метод, который получает список всех вакансий с указанием названия компании,
         названия вакансии и зарплаты и ссылки на вакансию."""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT name_company, name_vacancy, salary_from, salary_to, alternate_url
@@ -34,12 +34,11 @@ class Service:
                     JOIN company ON company.id_company = vacancy.id_employer;
                 """
             )
-            # Выполнение запроса
-            return manager.cursor.fetchall()  # Возврат результата запроса
+            return manager.cursor.fetchall()
 
     def get_companies_and_vacancies_count(self):
         """Метод, который получает список всех компаний и количество вакансий в каждой из них."""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT name_company, COUNT(*) 
@@ -47,23 +46,23 @@ class Service:
                     INNER JOIN vacancy ON company.id_company = vacancy.id_employer
                     GROUP BY name_company;
                 """
-            )  # Выполнение запроса
-            return manager.cursor.fetchall()  # Возврат результата запроса
+            )
+            return manager.cursor.fetchall()
 
     def get_avg_salary(self):
         """Метод, который получает среднюю зарплату по всем вакансиям."""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT AVG((salary_from + salary_to)/2)  AS avg_salary
                     FROM vacancy
                 """
-            )  # Выполнение запроса
-            return manager.cursor.fetchall()  # Возврат результата запроса
+            )
+            return manager.cursor.fetchall()
 
     def get_vacancies_with_higher_salary(self):
         """Метод, который получает список всех вакансий, у которых зарплата выше средней по всем вакансиям."""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT name_vacancy, salary_from, salary_to, salary_currency, alternate_url
@@ -72,12 +71,12 @@ class Service:
                     (SELECT  AVG((salary_from + salary_to)/2) AS salary_avg 
                     FROM vacancy)
                 """
-            )  # Выполнение запроса
-            return manager.cursor.fetchall()  # Возврат результата запроса
+            )
+            return manager.cursor.fetchall()
 
     def get_vacancies_with_keyword(self, keyword):
         """Метод, который получает список всех вакансий, в названии которых содержатся переданные в метод слова"""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT name_company, name_vacancy, salary_from, salary_to, salary_currency, alternate_url
@@ -87,33 +86,32 @@ class Service:
                     WHERE name_vacancy ILIKE %s
                 """,
                 (f"%{keyword}%",)
-            )  # Выполнение запроса,
-            # передача параметра в запрос в виде кортежа (f"%{keyword}%",)
-            return manager.cursor.fetchall()  # Возврат результата запроса
+            )
+            return manager.cursor.fetchall()
 
     def load_companies(self):
         """Метод, который загружает данные о компаниях в базу данных"""
-        companies = load_jsonfile(COMPANIES_JSON_PATH)  # Загрузка данных о компаниях из файла
-        with self.manager as manager:  # Открытие контекстного менеджера
+        companies = load_jsonfile(COMPANIES_JSON_PATH)
+        with self.manager as manager:
 
             query = """ 
                         INSERT INTO company (name_company, id_hh_company)
                         VALUES (%(name)s, %(id)s)
                     
             """
-            manager.cursor.executemany(query, companies)  # Выполнение запроса
-            manager.connection.commit()  # Сохранение изменений в базе данных
+            manager.cursor.executemany(query, companies)
+            manager.connection.commit()
 
     def get_companies_ids(self):
         """Метод, который получает id компаний из базы данных"""
-        with self.manager as manager:  # Открытие контекстного менеджера
+        with self.manager as manager:
             manager.cursor.execute(
                 """
                     SELECT id_hh_company
                     FROM company
                 """
-            )  # Выполнение запроса
-            companies = manager.cursor.fetchall()  # Возврат результата запроса
+            )
+            companies = manager.cursor.fetchall()
         companies_ids = []
         for company in companies:
             companies_ids.append(company['id_hh_company'])
@@ -136,10 +134,10 @@ class Service:
                 query = """
                             INSERT INTO vacancy (name_vacancy, salary_from, salary_to, salary_currency, alternate_url, id_employer)
                             VALUES (%(name_vacancy)s, %(salary_from)s, %(salary_to)s, %(salary_currency)s, %(alternate_url)s, %(id_employer)s)
-                """  # Запрос на добавление данных о вакансии в базу данных
-                manager.cursor.execute(query, vacancy)  # Выполнение запроса
+                """
+                manager.cursor.execute(query, vacancy)
 
-            manager.connection.commit()  # Сохранение изменений в базе данных
+            manager.connection.commit()
 
     def drop_vacancies(self):
         """Метод, который удаляет данные о вакансиях из базы данных"""
