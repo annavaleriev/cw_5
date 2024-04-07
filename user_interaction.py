@@ -24,7 +24,7 @@ def main():
     5. Получить список всех вакансий по ключевому слову
     """)
 
-    choice = input("Введите номер пункта: ")  # ввод номера пункта пользователем
+    choice = input("Введите номер пункта: ")
     if choice == "1":
         all_vacancies = service.get_companies_and_vacancies_count()
         all_vacancies_json = (covert_to_json(all_vacancies))
