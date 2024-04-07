@@ -10,10 +10,6 @@ def load_jsonfile(filename: str):
     return result  # возвращает словарь
 
 
-# def load_companies(filename: str):
-#     """ Функция для загрузки списка компаний """
-#     result = load_jsonfile(filename)  # загружает файл в формате json
-#     return result  # возвращает словарь
 def validate_field(field: dict, sub_field: str, default_returning_value) -> str or int or None:
     """
     Метод, который проверяет, есть ли указанное поле в словаре и вообще словарь ли это.
@@ -48,13 +44,15 @@ def get_vacancy_hh(all_companies: list[dict]) -> list[Vacancy]:
     return list_vacancy
 
 
-def convert_real_dict_row_to_dict(data):
+def convert_real_dict_row_to_dict(data) -> dict:
+    """ Метод, который преобразует строки в словарь"""
     return {
         key: str(value)
         for key, value in data.items()
     }
 
 
-def covert_to_json(data):
+def covert_to_json(data) -> str:
+    """ Метод, который преобразует данные в формат json"""
     result = list(map(convert_real_dict_row_to_dict, data))
     return json.dumps(result, indent=4, ensure_ascii=False)

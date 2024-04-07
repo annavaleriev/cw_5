@@ -1,15 +1,6 @@
-from collections import namedtuple
-
-import requests
-
-from api.hh import ApiHH
-from api.vacancy import Vacancy
 from database.managers import DBManager
-from settings import COMPANIES_JSON_PATH, URL_HH
+from settings import COMPANIES_JSON_PATH
 from utils import load_jsonfile
-
-
-# Company = namedtuple('Company', ['name_company', 'id_hh_company']) # именованынй кортеж
 
 
 class Service:
@@ -75,7 +66,7 @@ class Service:
         with self.manager as manager:  # Открытие контекстного менеджера
             manager.cursor.execute(
                 """
-                    SELECT name_vacancy
+                    SELECT name_vacancy, salary_from, salary_to, salary_currency, alternate_url
                     FROM vacancy
                     WHERE ((salary_from) + (salary_to)) / 2 >
                     (SELECT  AVG((salary_from + salary_to)/2) AS salary_avg 
@@ -104,9 +95,6 @@ class Service:
         """Метод, который загружает данные о компаниях в базу данных"""
         companies = load_jsonfile(COMPANIES_JSON_PATH)  # Загрузка данных о компаниях из файла
         with self.manager as manager:  # Открытие контекстного менеджера
-            # companies_data = []  # Создание списка для хранения данных о компаниях
-            # for company in companies:  # Перебор всех компаний
-            #     companies_data.append(Company(**company))  # Добавление данных о компании в список
 
             query = """ 
                         INSERT INTO company (name_company, id_hh_company)
@@ -117,6 +105,7 @@ class Service:
             manager.connection.commit()  # Сохранение изменений в базе данных
 
     def get_companies_ids(self):
+        """Метод, который получает id компаний из базы данных"""
         with self.manager as manager:  # Открытие контекстного менеджера
             manager.cursor.execute(
                 """
@@ -131,6 +120,7 @@ class Service:
         return companies_ids
 
     def load_vacancies(self, vacancies: list[dict]):
+        """Метод, который загружает данные о вакансиях в базу данных"""
         with self.manager as manager:
             for vacancy in vacancies:
                 manager.cursor.execute(
@@ -150,3 +140,13 @@ class Service:
                 manager.cursor.execute(query, vacancy)  # Выполнение запроса
 
             manager.connection.commit()  # Сохранение изменений в базе данных
+
+    def drop_vacancies(self):
+        """Метод, который удаляет данные о вакансиях из базы данных"""
+        with self.manager as manager:
+            manager.cursor.execute(
+                """
+                    DELETE FROM vacancy
+                """
+            )
+        manager.connection.commit()
