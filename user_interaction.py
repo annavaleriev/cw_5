@@ -59,10 +59,13 @@ def main():
     elif choice == "5":
         keyword = input("Введите ключевое слово для поиска: ").lower()
         vacancies = service.get_vacancies_with_keyword(keyword)
-        all_vacancies_json = (covert_to_json(vacancies))
-        data = json.loads(all_vacancies_json)
-        for item in data:
-            print(f" Вакансия: {item['name_vacancy']}, Зарплата: {item['salary_from']} - "
-                  f"{item['salary_to']}, {item['alternate_url']}")
+        if not vacancies:
+            print("Вакансий по данному ключевому слову не найдено!")
+        else:
+            all_vacancies_json = (covert_to_json(vacancies))
+            data = json.loads(all_vacancies_json)
+            for item in data:
+                print(f" Вакансия: {item['name_vacancy']}, Зарплата: {item['salary_from']} - "
+                      f"{item['salary_to']}, {item['alternate_url']}")
     else:
         print("Некорректный ввод команды! Попробуйте еще раз!")
