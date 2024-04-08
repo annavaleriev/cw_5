@@ -1,6 +1,7 @@
 import json
 
 from api.hh import ApiHH
+from api.vacancy import Vacancy
 from database.managers import DBManager
 from database.services import Service
 from utils import covert_to_json
@@ -12,7 +13,6 @@ hh = ApiHH()
 
 
 def main():
-
     print("""
     Привет! Выберите один из пунктов,чтобы получить информацию:
 
@@ -37,9 +37,25 @@ def main():
         all_vacancies_json = (covert_to_json(all_vacancies))
         data = json.loads(all_vacancies_json)
         for item in data:
+            salary_currency = item.get('salary_currency', '')
+            salary_from = item.get('salary_from', "")
+            salary_to = item.get('salary_to', "")
+            alternate_url = item.get('alternate_url', 'Не указана')
+            name_vacancy = item.get('name_vacancy', 'Не указана')
+            name_company = item.get('name_company', 'Не указана')
+            id_employer = item.get('id_employer', '')
+            vacancy = Vacancy(
+                name_vacancy,
+                salary_from,
+                salary_to,
+                salary_currency,
+                alternate_url,
+                id_employer
+            )
             print(
-                f"Компания: {item['name_company']}, Вакансия: {item['name_vacancy']}, "
-                f"Зарплата: {item['salary_from']} - {item['salary_to']}, {item['alternate_url']}")
+                f"Компания: {name_company}, Вакансия: {name_vacancy}, "
+                f"Зарплата: {vacancy.work_with_salary}, {alternate_url}"
+            )
 
     elif choice == "3":
         salary = service.get_avg_salary()
@@ -53,8 +69,24 @@ def main():
         all_vacancies_json = (covert_to_json(vacancies))
         data = json.loads(all_vacancies_json)
         for item in data:
-            print(f" Вакансия: {item['name_vacancy']}, Зарплата: {item['salary_from']} - "
-                  f"{item['salary_to']} {item['salary_currency']}, {item['alternate_url']}")
+            salary_currency = item.get('salary_currency', '')
+            salary_from = item.get('salary_from', "")
+            salary_to = item.get('salary_to', "")
+            alternate_url = item.get('alternate_url', 'Не указана')
+            name_vacancy = item.get('name_vacancy', 'Не указана')
+            id_employer = item.get('id_employer', '')
+            vacancy = Vacancy(
+                name_vacancy,
+                salary_from,
+                salary_to,
+                salary_currency,
+                alternate_url,
+                id_employer
+            )
+            print(
+                f" Вакансия: {name_vacancy}, "
+                f"Зарплата: {vacancy.work_with_salary}, {alternate_url}"
+            )
 
     elif choice == "5":
         keyword = input("Введите ключевое слово для поиска: ").lower()
@@ -65,7 +97,23 @@ def main():
             all_vacancies_json = (covert_to_json(vacancies))
             data = json.loads(all_vacancies_json)
             for item in data:
-                print(f" Вакансия: {item['name_vacancy']}, Зарплата: {item['salary_from']} - "
-                      f"{item['salary_to']}, {item['alternate_url']}")
+                salary_currency = item.get('salary_currency', '')
+                salary_from = item.get('salary_from', "")
+                salary_to = item.get('salary_to', "")
+                alternate_url = item.get('alternate_url', 'Не указана')
+                name_vacancy = item.get('name_vacancy', 'Не указана')
+                id_employer = item.get('id_employer', '')
+                vacancy = Vacancy(
+                    name_vacancy,
+                    salary_from,
+                    salary_to,
+                    salary_currency,
+                    alternate_url,
+                    id_employer
+                )
+                print(
+                    f" Вакансия: {name_vacancy}, "
+                    f"Зарплата: {vacancy.work_with_salary}, {alternate_url}"
+                )
     else:
         print("Некорректный ввод команды! Попробуйте еще раз!")
