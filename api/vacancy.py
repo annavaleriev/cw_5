@@ -43,63 +43,14 @@ class Vacancy:
         Метод, который работает с заработной платой
         :return: заработную плату для отображения в вакансии
         """
-        if self.salary_from and self.salary_to:
-            return f"{self.salary_from} - {self.salary_to} {self.check_currency()}"
-        elif self.salary_from:
-            return f"от {self.salary_from} {self.check_currency()}"
-        elif self.salary_to:
-            return f"до {self.salary_to} {self.check_currency()}"
-        else:
+        salary_from = int(self.salary_from) if self.salary_from else 0
+        salary_to = int(self.salary_to) if self.salary_to else 0
+
+        if salary_from <= 0 and salary_to <= 0:
             return "Не указана заработная плата"
-
-    def __str__(self) -> str:
-        """
-        Выводит сообщение для пользователя по вакансии
-        :return:строку с данными по вакансии
-        """
-
-        return (
-            f"Вакансия: {self.name_vacancy}\n"
-            f"{self.alternate_url}\n"
-            f"Зарплата: {self.work_with_salary}\n"
-            f"******************************************************************\n\n"
-        )
-
-    def __gt__(self, other) -> bool:
-        """
-        Метод, который сравнивает заработные платы какая больше
-        :param other: Другой объект типа Salary, с которым сравнивается текущий объект
-        :return: True, если заработная плата текущего объекта больше, чем у другого объекта, иначе False
-        """
-        return self.avg_salary > other.avg_salary
-
-    def __lt__(self, other) -> bool:
-        """
-        Метод, который сравнивает заработные платы какая меньше
-        :param other: Другой объект типа Salary, с которым сравнивается текущий объект
-        :return: True, если заработная плата текущего объекта меньше, чем у другого объекта, иначе False
-        """
-        return self.avg_salary < other.avg_salary
-
-    @property
-    def avg_salary(self) -> float:
-        """
-        Метод, который вычисляет среднюю заработную плату
-        :return: cреднюю заработную плату
-        """
-        return (self.salary_from + self.salary_to) / 2
-
-    def to_dict(self) -> dict:
-        """
-        Метод, который возвращает словарь с данными по вакансии
-        :return: cловарь с данными по вакансии
-        """
-        vacancy_dict: dict = {
-            "name_vacancy": self.name_vacancy,
-            "salary_to": self.salary_to,
-            "salary_from": self.salary_from,
-            "alternate_url": self.alternate_url,
-            "id_employer": self.id_employer,
-            "salary_currency": self.salary_currency,
-        }
-        return vacancy_dict
+        elif salary_from and salary_to:
+            return f"{salary_from} - {salary_to} {self.check_currency()}"
+        elif salary_from:
+            return f"от {salary_from} {self.check_currency()}"
+        elif salary_to:
+            return f"до {salary_to} {self.check_currency()}"
