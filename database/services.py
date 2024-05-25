@@ -11,7 +11,7 @@ class Service:
     def manager(self):
         """Метод для получения значения атрибута __manager"""
         if self.__manager is None:
-            raise NotImplementedError("""Менеджер базы данных не установлен. " 
+            raise NotImplementedError("""Менеджер базы данных не установлен. "
                                        Пожалуйста, установите менеджер перед выполнением операции.""")
         return self.__manager
 
@@ -19,7 +19,7 @@ class Service:
     def manager(self, obj):
         """Метод для установки значения атрибута __manager"""
         if not isinstance(obj, DBManager):
-            raise ValueError("""Неверный тип объекта для установки атрибута manager. 
+            raise ValueError("""Неверный тип объекта для установки атрибута manager.
                                 Ожидается объект класса DBManager или его подкласса.""")
         self.__manager = obj
 
@@ -41,7 +41,7 @@ class Service:
         with self.manager as manager:
             manager.cursor.execute(
                 """
-                    SELECT name_company, COUNT(*) 
+                    SELECT name_company, COUNT(*)
                     FROM company
                     INNER JOIN vacancy ON company.id_company = vacancy.id_employer
                     GROUP BY name_company;
@@ -68,7 +68,7 @@ class Service:
                     SELECT name_vacancy, salary_from, salary_to, salary_currency, alternate_url
                     FROM vacancy
                     WHERE ((salary_from) + (salary_to)) / 2 >
-                    (SELECT  AVG((salary_from + salary_to)/2) AS salary_avg 
+                    (SELECT  AVG((salary_from + salary_to)/2) AS salary_avg
                     FROM vacancy)
                 """
             )
@@ -81,7 +81,7 @@ class Service:
                 """
                     SELECT name_company, name_vacancy, salary_from, salary_to, salary_currency, alternate_url
                     FROM vacancy
-                    LEFT JOIN company 
+                    LEFT JOIN company
                     ON vacancy.id_employer = company.id_company
                     WHERE name_vacancy ILIKE %s
                 """,
@@ -94,10 +94,9 @@ class Service:
         companies = load_jsonfile(COMPANIES_JSON_PATH)
         with self.manager as manager:
 
-            query = """ 
+            query = """
                         INSERT INTO company (name_company, id_hh_company)
-                        VALUES (%(name)s, %(id)s)
-                    
+                        VALUES (%(name)s,%(id)s)                    
             """
             manager.cursor.executemany(query, companies)
             manager.connection.commit()
