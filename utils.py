@@ -22,25 +22,24 @@ def validate_field(field: dict, sub_field: str, default_returning_value) -> str 
     return field[sub_field]
 
 
-def get_vacancy_hh(all_companies: list[dict]) -> list[Vacancy]:
+def get_vacancy_hh(all_vacancies: list[dict]) -> list[Vacancy]:
     """
     Метод, который создает список объектов Vacancy на основе данных о вакансиях.
-    :param all_companies: список со словарями
+    :param all_vacancies: список со словарями
     :return: список с экземплярами класса Vacancy
     """
     list_vacancy: list = []
-    for company in all_companies:
-        for vacancy in company['vacancies']:
-            list_vacancy.append(
-                Vacancy(
-                    name_vacancy=vacancy["name"],
-                    salary_from=validate_field(vacancy["salary"], "from", 0),
-                    salary_to=validate_field(vacancy["salary"], "to", 0),
-                    alternate_url=vacancy["alternate_url"],
-                    salary_currency=validate_field(vacancy["salary"], "currency", None),
-                    id_employer=company['id']
-                )
+    for vacancy in all_vacancies:
+        list_vacancy.append(
+            Vacancy(
+                name_vacancy=vacancy["name"],
+                salary_from=validate_field(vacancy["salary"], "from", 0),
+                salary_to=validate_field(vacancy["salary"], "to", 0),
+                alternate_url=vacancy["alternate_url"],
+                salary_currency=validate_field(vacancy["salary"], "currency", None),
+                id_employer=vacancy["employer"]["id"],
             )
+        )
     return list_vacancy
 
 

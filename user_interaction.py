@@ -4,15 +4,23 @@ from api.hh import ApiHH
 from api.vacancy import Vacancy
 from database.managers import DBManager
 from database.services import Service
-from utils import covert_to_json
-
-db_manager = DBManager()
-service = Service()
-service.manager = db_manager
-hh = ApiHH()
+from utils import covert_to_json, get_vacancy_hh
 
 
 def main():
+    db_manager = DBManager()
+    service = Service()
+    service.manager = db_manager
+
+    user_choice = input("Хотите загрузить данные из HH по вакансиям в БД? Yes/No").lower()
+    if user_choice == "yes":
+        service.drop_vacancies()
+        hh = ApiHH()
+        hh.id_list_company = service.get_companies_ids()
+        vacancies = hh.get_all_vacancies()
+        vacancies_instances = get_vacancy_hh(vacancies)
+        service.load_vacancies(vacancies_instances)
+
     print("""
     Привет! Выберите один из пунктов,чтобы получить информацию:
 

@@ -54,3 +54,13 @@ class Vacancy:
             return f"от {salary_from} {self.check_currency()}"
         elif salary_to:
             return f"до {salary_to} {self.check_currency()}"
+
+    def to_dict(self):
+        return {
+            "name_vacancy": self.name_vacancy,
+            "salary_to": self.salary_to,
+            "salary_from": self.salary_from,
+            "alternate_url": self.alternate_url,
+            "id_employer": self.id_employer,
+            "salary_currency": self.salary_currency
+        }
