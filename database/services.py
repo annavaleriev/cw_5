@@ -1,6 +1,7 @@
+from api.vacancy import Vacancy
 from database.managers import DBManager
 from settings import COMPANIES_JSON_PATH
-from utils import load_jsonfile
+from utils import load_jsonfile, convert_real_dict_row_to_dict
 
 
 class Service:
@@ -116,7 +117,7 @@ class Service:
             companies_ids.append(company['id_hh_company'])
         return companies_ids
 
-    def load_vacancies(self, vacancies: list[dict]):
+    def load_vacancies(self, vacancies: list[Vacancy]):
         """Метод, который загружает данные о вакансиях в базу данных"""
         with self.manager as manager:
             for vacancy in vacancies:
@@ -125,16 +126,16 @@ class Service:
                         SELECT id_company
                         FROM company
                         WHERE id_hh_company = %s
-                    """, (vacancy['id_employer'],)
+                    """, (vacancy.id_employer,)
                 )
                 id_employer = manager.cursor.fetchone()
-                vacancy['id_employer'] = id_employer['id_company']
+                vacancy.id_employer = id_employer['id_company']
 
                 query = """
                             INSERT INTO vacancy (name_vacancy, salary_from, salary_to, salary_currency, alternate_url, id_employer)
                             VALUES (%(name_vacancy)s, %(salary_from)s, %(salary_to)s, %(salary_currency)s, %(alternate_url)s, %(id_employer)s)
                 """
-                manager.cursor.execute(query, vacancy)
+                manager.cursor.execute(query, convert_real_dict_row_to_dict(vacancy.to_dict()))
 
             manager.connection.commit()
 
@@ -146,4 +147,4 @@ class Service:
                     DELETE FROM vacancy
                 """
             )
-        manager.connection.commit()
+            manager.connection.commit()
