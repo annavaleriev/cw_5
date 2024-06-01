@@ -8,6 +8,7 @@ from utils import covert_to_json, get_vacancy_hh
 
 
 def main():
+    """ Основная функция для взаимодействия с пользователем"""
     db_manager = DBManager()
     service = Service()
     service.manager = db_manager
