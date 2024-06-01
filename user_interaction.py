@@ -13,7 +13,8 @@ def main():
     service = Service()
     service.manager = db_manager
 
-    user_choice = input("Хотите загрузить данные из HH по вакансиям в БД? Yes/No").lower()
+    user_choice = input("Привет! Хотите загрузить данные c HeadHunter по вакансиям в Базу Данных? \n"
+                        "Напишите YES/NO или нажми ENTER вместо NO. ").lower()
     if user_choice == "yes":
         service.drop_vacancies()
         hh = ApiHH()

@@ -1,5 +1,5 @@
-Прежде чем начать работу с программой необходимо включить песню Eminem - Not Afraid. <br>
-Это создаст настроение и поможет вам сосредоточиться на работе. <br>
+*<span style="color:purple;">Прежде чем начать работу с программой необходимо включить песню Eminem - Not Afraid.</span>* <br>
+*<span style="color:purple;">Это создаст настроение и поможет вам сосредоточиться на работе.</span>* <br>
 [Прослушать песню на SoundCloud](https://soundcloud.com/meybee/eminem-not-afraid?si=724a231b51824eb39947dd42253370a4&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing)
 
 
@@ -40,12 +40,60 @@
 Пользователь может также загрузить свой список вакансий, и работать как с ранее загруженными вакансиями в базу, так и обновлять их и загружать новые.
 
 
+<h2 style="color: lightgreen; font-size: 1em;">Результат для пользователя</h2>
+
+При выборе опции 1 пользователь получит список всех компаний и количество вакансий в каждой из них.<br>
+![img_1.png](images/img_1.png)<br>
+При выборе опции 2 пользователь получит список всех вакансий с указанием названия компании, названия вакансии, 
+зарплаты и ссылки на вакансию.<br>
+![img_2.png](images/img_2.png) <br>
+При выборе опции 3 пользователь получит среднюю зарплату по всем вакансиям.<br>
+![img_3.png](images/img_3.png) <br>
+При выборе опции 4 пользователь получит список всех вакансий, у которых зарплата выше средней по всем вакансиям.<br>
+![img_4.png](images/img_4.png) <br>
+При выборе опции 5 пользователь получит список всех вакансий по ключевому слову.<br>
+![img_5.png](images/img_5.png) <br>
+
+<details>
+  <summary><b><span style="color:blue;">Стек технологий</span></b></summary>
+
+
+Для проекта <i>Filenko's HH Job Hunt Master</i> использовались следующие зависимости:
+
+- Python версии 3.11
+- Библиотека requests версии 2.32.2 для работы с HTTP-запросами
+```bash
+poetry add requests
+```
+- Библиотека psycopg2-binary версии 2.9.9 для взаимодействия с базой данных PostgreSQL
+```bash
+poetry add psycopg2-binary@2.9.9
+```
+Эти зависимости указаны в файле pyproject.toml и управляются с помощью инструмента Poetry.
+
+</details>
 
 <details>
   <summary><b><span style="color:blue;">Подготовка к запуску программы</span></b></summary>
   
 Сначала необходимо создать базу данных и таблицы в ней.<br>
 Базу данных можно создать с помощью команды в программе, например, Dbeaver.
+
+## <span style="color: lightblue;">Установите зависимости</span>
+Для проекта <i>Filenko's HH Job Hunt Master</i> использовались следующие зависимости:
+
+- Python версии 3.11
+- Библиотека requests версии 2.32.2 для работы с HTTP-запросами
+```bash
+poetry add requests
+```
+- Библиотека psycopg2-binary версии 2.9.9 для взаимодействия с базой данных PostgreSQL
+```bash
+poetry add psycopg2-binary@2.9.9
+```
+
+Эти зависимости указаны в файле pyproject.toml и управляются с помощью инструмента Poetry.
+
 
 ## <span style="color: lightblue;">Создание базы в DBeaver</span>
 - Откройте DBeaver.
@@ -97,16 +145,3 @@ python3 main.py
 ```
 </details>
 
-<details>
-  <summary><b><span style="color:blue;">Стек технологий</span></b></summary>
-
-
-Для проекта <i>Filenko's HH Job Hunt Master</i> использовались следующие зависимости:
-
-- Python версии 3.11
-- Библиотека requests версии 2.32.2 для работы с HTTP-запросами
-- Библиотека psycopg2-binary версии 2.9.9 для взаимодействия с базой данных PostgreSQL
-
-Эти зависимости указаны в файле pyproject.toml и управляются с помощью инструмента Poetry.
-
-</details>
