@@ -1,5 +1,9 @@
-<h1 style="color: lightgreen; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Описание проекта Filenko's HH Job Hunt Master</h1>
+Прежде чем начать работу с программой необходимо включить песню Eminem - Not Afraid. <br>
+Это создаст настроение и поможет вам сосредоточиться на работе. <br>
+[Прослушать песню на SoundCloud](https://soundcloud.com/meybee/eminem-not-afraid?si=724a231b51824eb39947dd42253370a4&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing)
 
+
+<h1 style="color: lightgreen; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Описание проекта Filenko's HH Job Hunt Master</h1>
 
 
 
