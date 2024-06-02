@@ -141,7 +141,7 @@ python3 load_companies_to_db.py
   <summary><b><span style="color:blue;">Запуск программы</span></b></summary>
 
 ```shell
-python3 main.py
+python main.py
 ```
 </details>
 
